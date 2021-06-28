@@ -122,7 +122,7 @@ class RiskfreeRate():
         # 格式：(float, float)，代表（期限，利率）
         self.rate = []
 
-    # 找到第一个小于所给日期的期限，比如输入期限为1.5，就返回1年期国债收益率
+    # 插值法计算无风险收益率
     def GetRate(self, maturity):
         lx, rx = None, None
         ly, ry = None, None
