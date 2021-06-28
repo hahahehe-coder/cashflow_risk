@@ -124,9 +124,18 @@ class RiskfreeRate():
 
     # 找到第一个小于所给日期的期限，比如输入期限为1.5，就返回1年期国债收益率
     def GetRate(self, maturity):
+        lx, rx = None, None
+        ly, ry = None, None
         for i in range(len(self.rate)):
             if self.rate[i][0] > maturity:
-                return self.rate[i - 1][1]
+                lx = self.rate[i - 1][0]
+                rx = self.rate[i][0]
+                ly = self.rate[i - 1][1]
+                ry = self.rate[i][1]
+                break
+        deltax = rx - lx
+        deltay = ry - ly
+        return deltay * (maturity - lx) / deltax + ly
 
     def Add(self, maturity, rate):
         self.rate.append((maturity, rate))

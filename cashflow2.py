@@ -183,7 +183,7 @@ def WriteRisk(filepath, risk_code):
         for code in risk_code:
             if risk_code[code] < 0:
                 continue
-            file.write(code + ' ' + str(risk_code(code)) + '\n')
+            file.write(code + ' ' + str(risk_code[code]) + '\n')
     file.close()
 
 def WriteExcel(filepath, data, risk_code):
