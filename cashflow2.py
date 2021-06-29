@@ -1,5 +1,6 @@
 import xlrd
-from xlrd.sheet import Hyperlink, Sheet
+from xlrd.sheet import Sheet
+from dateutil.relativedelta import relativedelta
 import time
 import datetime
 import numpy as np
@@ -13,10 +14,15 @@ def TakeThird(l: list):
 def CalcDateGap(date1: str, date2: str):
     date1=time.strptime(date1,"%Y/%m/%d")
     date2=time.strptime(date2,"%Y/%m/%d")
-    date1=datetime.datetime(date1[0],date1[1],date1[2])
+    year = date2[0] - date1[0]  # 整年数
+    thisYear = date2[0]
+    date1=datetime.datetime(date2[0],date1[1],date1[2])
     date2=datetime.datetime(date2[0],date2[1],date2[2])
-    #返回两个变量相差的值，就是相差天数
-    return (date2 - date1).days / 365
+    day = (date2 - date1).days
+    if thisYear % 4 == 0:   # 闰年
+        return year + day / 366
+    else:
+        return year + day / 365
 
 # 从excel表格中得到浮动利率所需的信息
 def GetFloatRateExtraData(excelData: Sheet) -> FloatRateEx:
@@ -231,7 +237,7 @@ def WriteExcel(filepath, data, risk_code):
         row, col, value = IGInfo[i][0], IGInfo[i][1], 'HY'
         worksheet.cell(row, col, value)
     
-    workbook.save(filename=filepath)
+    workbook.save(filename = filepath)
 
 if __name__ == '__main__':
     data, secutiries, floatRates, riskfreeRates = ReadExcelData('C:\\Users\\86183\\Documents\\temp\\信用利差计算-20110131_old.xlsx')
@@ -241,6 +247,7 @@ if __name__ == '__main__':
     risk_catagory, risk_code = GetRisk(secutiries, '2011/1/31', riskfreeRates, None)
     # risk_code = ReadRisk('risk.txt')
     WriteRisk('risk.txt', risk_code)
+    print('写入excel文件...')
     WriteExcel('C:\\Users\\86183\\Documents\\temp\\信用利差计算-20110131.xlsx', data, risk_code)
 
     for key in risk_catagory:

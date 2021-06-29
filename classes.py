@@ -122,7 +122,7 @@ class RiskfreeRate():
         # 格式：(float, float)，代表（期限，利率）
         self.rate = []
 
-    # 插值法计算无风险收益率
+    # 找到第一个小于所给日期的期限，比如输入期限为1.5，就返回1年期国债收益率
     def GetRate(self, maturity):
         lx, rx = None, None
         ly, ry = None, None
@@ -212,14 +212,14 @@ class Secutiry():
             (beg, end) = tuple(map(int, period.split('-')))
             length = int((end - beg + 1) / 10000)
             rate = float(rateInfo.split(':')[1].split('%')[0])
-            for i in range(length - 1):
+            for i in range(length):
                 self.rateArray.append(rate / 100)
 
             period, rateInfo = info[1].split(',')
             (beg, end) = tuple(map(int, period.split('-')))
             length = int((end - beg + 1) / 10000)
             rate = float(rateInfo.split(':')[1].split('%')[0])
-            for i in range(length + 1):
+            for i in range(length):
                 self.rateArray.append(rate / 100)
             # for i in info:
             #     period, rateInfo = i.split(',')
@@ -247,20 +247,21 @@ class Secutiry():
             for i in range(len(self.dateArray)):
                 self.rateArray.append(self.couponRate)
         elif self.rateType == u'累进利率':
+
             info = self.rateInfo.split(';')
             # 此段有较大局限性，仅能支持两段式累进利率
             period, rateInfo = info[0].split(',')
             (beg, end) = tuple(map(int, period.split('-')))
             length = int((end - beg + 1) / 10000)
             rate = float(rateInfo.split(':')[1].split('%')[0])
-            for i in range(length - 1):
+            for i in range(length):
                 self.rateArray.append(rate / 100)
 
             period, rateInfo = info[1].split(',')
             (beg, end) = tuple(map(int, period.split('-')))
             length = int((end - beg + 1) / 10000)
             rate = float(rateInfo.split(':')[1].split('%')[0])
-            for i in range(length + 1):
+            for i in range(length):
                 self.rateArray.append(rate / 100)
         elif self.rateType == u'浮动利率':
             info = self.rateInfo.split('+')
