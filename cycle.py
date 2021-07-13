@@ -196,6 +196,7 @@ if __name__ == '__main__':
         rolling1=12, 
         rolling2=12, 
         method='CurrencyCredit',
+        shape=2
     )
     print(result)
 
