@@ -23,7 +23,6 @@ def _MLCycle(cpi: DataFrame, oecd: DataFrame, cpi_rolling=1, oecd_rolling=1, fig
     data = data.dropna(axis=0, how='any')
     # print(data)
     result = []
-
     for index, row in data.iterrows():
         c = row['deltaCPI']
         o = row['deltaOECD']
@@ -61,10 +60,9 @@ def _CurrencyCreditCycle(loan: DataFrame, inteRate: DataFrame, loan_rolling=1, i
     data['Rate'] = data['Rate'].rolling(inteRate_rolling).mean()
     data['deltaLoan'] = data['Loan'].diff()
     data['deltaRate'] = data['Rate'].diff()
-
     data = data.dropna(axis=0, how='any')
+    
     result = []
-
     for index, row in data.iterrows():
         l = row['deltaLoan']
         r = row['deltaRate']
