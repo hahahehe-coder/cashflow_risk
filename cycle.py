@@ -6,6 +6,7 @@ from datetime import datetime
 import dateutil
 import numpy as np
 import pandas as pd
+import calendar
 
 def GetData(code, begin_time, end_time, source: str) -> dict:
     '''
@@ -72,34 +73,51 @@ def TransformResult(result, method, to_pair=True):
         return result
 
 
-def _CalcCycle(target1, target2, rolling1, rolling2, method, shape=1, to_pair=True, fig=False):
+def _CalcCycle(target1, target2, rolling1, rolling2, method, interval=1, to_pair=True, fig=False):
     '''
     ---计算周期的具体实现---
     target1: 用来计算的第一个指标数据，类型为dict，两个维度为'key'和'value'
     target2: 用来计算的第二个指标数据，类型维度同上
-    rolling1: 指标一的移动平均数量，单位：月
-    rolling2: 指标二的移动平均数量，单位：月
+    rolling1: 指标一的移动平均数量，单位：参数interval
+    rolling2: 指标二的移动平均数量，单位：参数interval
     method: 计算哪个周期，可选项['ML', 'CurrencyCredit']
-    shape: 以哪个指标的数据形状为准，可选项[1, 2]
+    interval: 以哪个时间间隔为准，可选项['month', 'day']
     to_pair: 输出结果是否转成pair的格式，为True转，为False时格式与输入相同，两个维度为'date'和'period'
     fig: 是否展现简单可视化，为True会阻塞程序
     '''
     target1 = ToDataFrame(target1, 'date', 't1')
     target2 = ToDataFrame(target2, 'date', 't2')
     data = target1.join(target2, how='outer')
+    data = data.fillna(method='ffill')
 
     ## [数据变形begin]
-    # 把两种指标变成相同的格式
-    if shape == 1:
-        # 给target2的数据填上与target1相比的空缺
-        data['t2'] = data['t2'].fillna(method='ffill')
-        # 把data['t2']变成data['t1']的形状
-        data = data.drop(list(data[np.isnan(data['t1'])].index))
-    elif shape == 2:
-        data['t1'] = data['t1'].fillna(method='ffill')
-        data = data.drop(list(data[np.isnan(data['t2'])].index))
+    date_start = data.index.min()
+    date_start = time.strptime(date_start,"%Y-%m-%d")
+    date_start = datetime(date_start[0], date_start[1], date_start[2])
+    date_end = data.index.max()
+    date_end = time.strptime(date_end,"%Y-%m-%d")
+    date_end = datetime(date_end[0], date_end[1], date_end[2])
+    if interval == 'month':
+        month_dates = []
+        while date_start <= date_end:
+            month_dates.append(datetime(
+                date_start.year, 
+                date_start.month, 
+                calendar.monthrange(date_start.year, date_start.month)[1]
+            ).date().__str__())    # 取月末
+            date_start += dateutil.relativedelta.relativedelta(months=1)
+        data = data.drop([i for i in data.index.values if i not in month_dates])
+    elif interval == 'day':
+        day_dates = []
+        while date_start <= date_end:
+            day_dates.append(datetime(date_start.year, date_start.month, date_start.day).date().__str__())     # 重新构造一个对象
+            date_start += dateutil.relativedelta.relativedelta(days=1)
+        tmp = DataFrame([[v] for v in day_dates], index=day_dates, columns=['tmp'])
+        tmp = tmp.join(data, how='outer')
+        data = tmp.fillna(method='ffill')
+        data = data.drop(['tmp'], axis=1)
     else:
-        raise Exception('未知的参数“shape”！')
+        raise Exception('未知的参数“interval”！')
     ## [数据变形end]
 
     data['t1'] = data['t1'].rolling(rolling1).mean().diff()
@@ -141,17 +159,17 @@ def _CalcCycle(target1, target2, rolling1, rolling2, method, shape=1, to_pair=Tr
     # return TransformResult(result, 'skip', to_pair)
     return TransformResult(result, method, to_pair) # 转换输出格式
 
-def CalcCycle(code1: str, code2: str, begin_time: str, end_time:str, rolling1=1, rolling2=1, method='ML', shape=1, to_pair=True, fig=False):
+def CalcCycle(code1: str, code2: str, begin_time: str, end_time:str, rolling1=1, rolling2=1, method='ML', interval='month', to_pair=True, fig=False):
     '''
     ---周期计算函数---
     code1: 指标一代码，在使用美林周期时代表OECD指标，在使用货币信用周期时代表贷款指标
     code2: 指标二代码，在使用美林周期时代表CPI指标，在使用货币信用周期时代表利率指标
     begin_time: 要得到的结果的开始时间，形式如：'2020-1-31'（年月日写全）
     end_time: 要得到的结果的结束时间，形式同上
-    rolling1: 指标一的移动平均数量，单位：月
-    rolling2: 指标二的移动平均数量，单位：月
+    rolling1: 指标一的移动平均数量，单位：参数interval
+    rolling2: 指标二的移动平均数量，单位：参数interval
     method: 计算哪个周期，可选项['ML', 'CurrencyCredit']
-    shape: 以哪个指标的数据形状为准，可选项[1, 2]
+    interval: 以哪个时间间隔为准，可选项['month', 'day']
     to_pair: 输出结果是否转成pair的格式，为True转，为False时格式与GetData返回值相同，两个维度为'date'和'period'
     fig: 是否展现简单可视化，为True会阻塞程序
     '''
@@ -168,7 +186,7 @@ def CalcCycle(code1: str, code2: str, begin_time: str, end_time:str, rolling1=1,
     target2 = GetData(code2, begin_time, end_time, source='wind')
     ## [数据获取end]
 
-    return _CalcCycle(target1, target2, rolling1, rolling2, method, shape, to_pair, fig)
+    return _CalcCycle(target1, target2, rolling1, rolling2, method, interval, to_pair, fig)
 
 if __name__ == '__main__':
     w.start()
@@ -183,7 +201,6 @@ if __name__ == '__main__':
         rolling1=1, 
         rolling2=12, 
         method='ML',
-        shape=1
     )
     print(result)
 
@@ -197,7 +214,6 @@ if __name__ == '__main__':
         rolling1=12, 
         rolling2=12, 
         method='CurrencyCredit',
-        shape=2
     )
     print(result)
 
