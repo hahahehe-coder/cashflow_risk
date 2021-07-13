@@ -182,7 +182,8 @@ if __name__ == '__main__':
         end_time='2021-01-31', 
         rolling1=1, 
         rolling2=12, 
-        method='ML'
+        method='ML',
+        shape=1
     )
     print(result)
 
