@@ -91,7 +91,7 @@ def _CurrencyCreditCycle(loan: DataFrame, inteRate: DataFrame, loan_rolling=1, i
 '''
 ---美林周期的接口---
 oecd_code: OECD指标的指标代码，仅支持索引为“月”的指标
-cpi_code: CPi指标的指标代码，仅支持索引为“月”的指标
+cpi_code: CPI指标的指标代码，仅支持索引为“月”的指标
 begin_time: 计算周期的开始时间，表示方式如：'2000-01-31'
 end_time: 计算周期的结束时间，表示方式同上
 oecd_rolling: OECD指标的移动平均数量，单位：月
