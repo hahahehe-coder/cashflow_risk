@@ -13,7 +13,7 @@ def GetEDBData(code, beginTime, endTime, usedf=True) -> DataFrame:
         raise Exception('edb指标%s获取失败！' % code)
 
 # 此函数为美林周期算法的具体实现
-def _MLCycle(cpi: DataFrame, oecd: DataFrame, cpi_rolling=12, oecd_rolling=1, fig=False):
+def _MLCycle(cpi: DataFrame, oecd: DataFrame, cpi_rolling=1, oecd_rolling=1, fig=False):
     cpi = cpi.rolling(cpi_rolling).mean().rename(columns={'CLOSE':'CPI'})
     oecd = oecd.rolling(oecd_rolling).mean().rename(columns={'CLOSE':'OECD'})
     data = cpi.join(oecd)
