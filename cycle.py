@@ -121,6 +121,9 @@ def _CalcCycle(target1, target2, rolling1, rolling2, method, shape=1, to_pair=Tr
         elif l < 0 and r > 0:
             result['period'].append(4)
         else:   # 出现0沿用上一个周期
+            if len(result['period']) == 0:
+                result['period'].append(1)
+                continue
             result['period'].append(result['period'][-1])
     # [结果计算end]
 
