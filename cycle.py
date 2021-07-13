@@ -160,7 +160,7 @@ def CalcCycle(code1: str, code2: str, begin_time: str, end_time:str, rolling1=1,
     bigger = rolling1 if rolling1 > rolling2 else rolling2
     begin_time = time.strptime(begin_time,"%Y-%m-%d")
     begin_time = datetime(begin_time[0], begin_time[1], begin_time[2]) - \
-        dateutil.relativedelta.relativedelta(months=bigger)
+        dateutil.relativedelta.relativedelta(months=bigger, days=3)
     ## [开始时间计算end]
 
     ## [数据获取begin]
