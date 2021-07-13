@@ -49,7 +49,7 @@ def TransformResult(result, method, to_pair=True):
     ---结果转换函数，将用数字标识的周期转为用字符串标识的周期---
     result: period用数字标识
     method: 采用哪种对照表，可选项：['ML', 'CurrencyCredit', 'skip']
-    pair: 是否用pair的方式转换数据，若为True结果格式变为[[日期1, 周期1], [日期2, 周期2]...]
+    to_pair: 是否用pair的方式转换数据，若为True结果格式变为[[日期1, 周期1], [日期2, 周期2]...]
     '''
     pair = []
     if method == 'ML':
