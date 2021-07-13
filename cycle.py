@@ -186,8 +186,8 @@ if __name__ == '__main__':
     # 示例二：货币信用周期
     print('示例二：货币信用周期')
     result = CalcCycle(
-        code1='M0009970', 
-        code2='M0041653', 
+        code1='M0041653', 
+        code2='M0009970', 
         begin_time='2020-01-31', 
         end_time='2021-01-31', 
         rolling1=12, 
