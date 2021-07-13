@@ -73,7 +73,7 @@ def TransformResult(result, method, to_pair=True):
         return result
 
 
-def _CalcCycle(target1, target2, rolling1, rolling2, method, interval=1, to_pair=True, fig=False):
+def _CalcCycle(target1, target2, rolling1, rolling2, method, interval, to_pair=True, fig=False):
     '''
     ---计算周期的具体实现---
     target1: 用来计算的第一个指标数据，类型为dict，两个维度为'key'和'value'
