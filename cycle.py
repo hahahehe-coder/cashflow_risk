@@ -129,7 +129,7 @@ inteRate_rolling: CPI指标的移动平均数量，单位：月
 fig: 是否展现简单可视化，若为True弹窗会阻塞程序
 '''
 
-def CurrencyCreditCycle(loan_code, interestRate_code, begin_time: str, end_time: str, loan_rolling=1, inteRate_rolling=1, fig=False):
+def CurrencyCreditCycle(loan_code: str, interestRate_code: str, begin_time: str, end_time: str, loan_rolling=1, inteRate_rolling=1, fig=False):
     w.start()
     loan_begin_time = time.strptime(begin_time,"%Y-%m-%d")
     loan_begin_time = datetime(loan_begin_time[0], loan_begin_time[1], loan_begin_time[2]) - \
